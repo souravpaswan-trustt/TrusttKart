@@ -1,5 +1,6 @@
 package com.example.trusttkart.ui.home
 
+import android.R.attr.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -31,21 +32,22 @@ class HomeFragment : Fragment() {
         binding.homeFragmentToSignIn.setOnClickListener {
             try {
                 val intent = Intent(requireContext(), AuthActivity::class.java)
-                startActivity(intent)
-            } catch(e: Exception){
-                Log.i("Sourav", e.toString())
-            }
-        }
-
-        binding.homeFragmentToSignUp.setOnClickListener {
-            try {
-                val intent = Intent(requireContext(), AuthActivity::class.java)
+                intent.putExtra("fragmentName", "SignInFragment")
                 startActivity(intent)
             } catch(e: Exception){
                 Log.i("IntentError", e.toString())
             }
         }
 
+        binding.homeFragmentToSignUp.setOnClickListener {
+            try {
+                val intent = Intent(requireContext(), AuthActivity::class.java)
+                intent.putExtra("fragmentName", "SignUpFragment")
+                startActivity(intent)
+            } catch(e: Exception){
+                Log.i("IntentError", e.toString())
+            }
+        }
         return binding.root
     }
 }

@@ -109,7 +109,7 @@
                 android:backgroundTint="#0D6EFD"
                 android:paddingHorizontal="8dp"
                 android:paddingVertical="12dp"
-                android:text="Login"
+                android:text="Sign in"
                 android:textSize="20sp" />
 
         </LinearLayout>
