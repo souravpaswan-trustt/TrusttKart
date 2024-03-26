@@ -82,6 +82,8 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
     kapt("androidx.lifecycle:lifecycle-compiler:$lifecycle_version")
+    implementation("androidx.core:core-splashscreen:1.0.0")
+
 
 
 
