@@ -9,10 +9,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.navigation.findNavController
-import com.example.trusttkart.HomeActivity
+import com.example.trusttkart.MainActivity
 import com.example.trusttkart.R
 import com.example.trusttkart.databinding.FragmentSignUpBinding
 
@@ -32,10 +31,10 @@ class SignUpFragment : Fragment() {
 
         binding.SignUpButton.setOnClickListener {
             try {
-                val intent = Intent(requireContext(), HomeActivity::class.java)
+                val intent = Intent(requireContext(), MainActivity::class.java)
                 startActivity(intent)
             } catch(e: Exception){
-                Log.i("Sourav", e.toString())
+                Log.i("IntentError", e.toString())
             }
         }
 
