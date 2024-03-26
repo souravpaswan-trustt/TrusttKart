@@ -18,7 +18,6 @@ class AuthActivity : AppCompatActivity() {
             val fragmentName = intent.getStringExtra("fragmentName")
             when (fragmentName) {
                 "SignInFragment" -> {
-                    Log.i("trial", "Hello")
                     val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
                     val navController = navHostFragment.navController
                     navController.navigate(R.id.signInFragment)
