@@ -35,6 +35,11 @@ class SignInFragment : Fragment() {
         binding.signInToSignUpTextView.setOnClickListener {
             it.findNavController().navigate(R.id.action_signInFragment_to_signUpFragment)
         }
+
+        binding.forgotPasswordtextView.setOnClickListener {
+            it.findNavController().navigate(R.id.action_signInFragment_to_forgotPasswordFragment)
+        }
+
         return binding.root
     }
 }
