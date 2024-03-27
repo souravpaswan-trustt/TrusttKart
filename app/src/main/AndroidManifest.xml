@@ -13,19 +13,26 @@
         android:theme="@style/Theme.TrusttKart"
         tools:targetApi="31">
         <activity
-            android:name=".AuthActivity"
-            android:exported="false"
-            android:label="@string/title_activity_home" />
-        <activity
-            android:name=".MainActivity"
+            android:name=".SplashScreen"
             android:screenOrientation="sensorPortrait"
-            android:theme="@style/Theme.App.SplashScreen"
+            android:launchMode="singleInstance"
+            android:theme="@style/Theme.RemoveSplashScreenTheme"
+            android:noHistory="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".AuthActivity"
+            android:exported="false"
+            android:label="@string/title_activity_home" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:screenOrientation="sensorPortrait">
         </activity>
     </application>
 

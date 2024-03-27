@@ -7,10 +7,8 @@
 
     <style name="Theme.TrusttKart" parent="Base.Theme.TrusttKart" />
 
-    <style name="Theme.App.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/trustt_logo</item>
-        <item name="postSplashScreenTheme">@style/Base.Theme.TrusttKart</item>
+    <style name="Theme.RemoveSplashScreenTheme" parent="@style/Base.Theme.TrusttKart">
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 </resources>
