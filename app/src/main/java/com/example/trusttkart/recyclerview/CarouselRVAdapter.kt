@@ -13,12 +13,12 @@ class CarouselRVAdapter(private val carouselDataList: ArrayList<String>) :
     class CarouselItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CarouselItemViewHolder {
-        val viewHolder = LayoutInflater.from(parent.context).inflate(R.layout.item_carousel, parent, false)
+        val viewHolder = LayoutInflater.from(parent.context).inflate(R.layout.product_carousel, parent, false)
         return CarouselItemViewHolder(viewHolder)
     }
 
     override fun onBindViewHolder(holder: CarouselItemViewHolder, position: Int) {
-        val textView = holder.itemView.findViewById<TextView>(R.id.textview)
+        val textView = holder.itemView.findViewById<TextView>(R.id.carouselProductNameTextView)
         textView.text = carouselDataList[position]
     }
 

@@ -24,7 +24,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_margin="25dp"
+                android:layout_margin="10dp"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -69,6 +69,15 @@
                         app:strokeColor="#0d6efd"
                         app:strokeWidth="2dp" />
                 </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/imageView4"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="15dp"
+                    android:adjustViewBounds="true"
+                    app:srcCompat="@drawable/latest_trends" />
 
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/view_pager"
