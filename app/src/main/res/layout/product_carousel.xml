@@ -24,7 +24,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@drawable/forgot_password" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -57,19 +57,19 @@
                 android:id="@+id/carouselProductCategoryTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/blueTheme"
                 android:text="Product Category"
-                android:textSize="15sp"/>
+                android:textColor="@color/blueTheme"
+                android:textSize="15sp" />
 
             <Button
                 android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="10dp"
                 android:backgroundTint="@color/blueTheme"
-                android:text="Add to cart" />
+                android:text="Add to cart"
+                android:textSize="20sp" />
 
         </LinearLayout>
 
