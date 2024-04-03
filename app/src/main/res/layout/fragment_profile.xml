@@ -108,7 +108,7 @@
                     android:backgroundTint="@color/blueTheme"
                     android:paddingHorizontal="8dp"
                     android:paddingVertical="12dp"
-                    android:text="SIGN UP"
+                    android:text="Save details"
                     android:textSize="20sp" />
 
             </LinearLayout>

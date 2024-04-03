@@ -20,6 +20,7 @@ class CarouselRVAdapter(private val carouselDataList: ArrayList<String>) :
     override fun onBindViewHolder(holder: CarouselItemViewHolder, position: Int) {
         val textView = holder.itemView.findViewById<TextView>(R.id.carouselProductNameTextView)
         textView.text = carouselDataList[position]
+//        textView.text = arrayList[position]
     }
 
     override fun getItemCount(): Int {

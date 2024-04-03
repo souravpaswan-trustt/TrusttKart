@@ -1,6 +1,5 @@
 package com.example.trusttkart.ui.home
 
-import android.R.attr.fragment
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -61,7 +60,8 @@ class HomeFragment : Fragment() {
             (getChildAt(0) as RecyclerView).overScrollMode =
                 RecyclerView.OVER_SCROLL_NEVER
         }
-        val demoData = arrayListOf(
+
+         val demoData = arrayListOf(
             "Christmas Tree",
             "Armchair and footstool",
             "Rocking-chair",
