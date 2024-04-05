@@ -2,7 +2,6 @@ package com.example.trusttkart.retrofit
 
 
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -10,8 +9,8 @@ import retrofit2.http.POST
 
 interface RetrofitService {
 
-    @GET("product/")
-    fun getProducts() : Response<Products>
+//    @GET("product/")
+//    fun getProducts() : Response<ProductsResponse>
 
     @POST("api/login")
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>
@@ -19,7 +18,8 @@ interface RetrofitService {
     @POST("api/register")
     fun register(@Body credentials: RegisterCredentials): Call<RegisterResponse>
 
-//    @GET("")
+    @GET("product/")
+    fun getProducts(): Call<List<ProductsResponse>>
 }
 
 data class LoginCredentials(

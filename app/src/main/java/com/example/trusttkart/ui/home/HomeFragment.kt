@@ -8,9 +8,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
@@ -18,6 +20,15 @@ import com.example.trusttkart.AuthActivity
 import com.example.trusttkart.R
 import com.example.trusttkart.databinding.FragmentHomeBinding
 import com.example.trusttkart.recyclerview.CarouselRVAdapter
+import com.example.trusttkart.retrofit.ProductsResponse
+import com.example.trusttkart.retrofit.RetrofitInstance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class HomeFragment : Fragment() {
 
@@ -73,20 +84,57 @@ class HomeFragment : Fragment() {
                 RecyclerView.OVER_SCROLL_NEVER
         }
 
-         val demoData = arrayListOf(
-            "Christmas Tree",
-            "Armchair and footstool",
-            "Rocking-chair",
-            "Smartphones",
-            "Laptops and Desktops"
-        )
+//         val demoData = arrayListOf(
+//            "Christmas Tree",
+//            "Armchair and footstool",
+//            "Rocking-chair",
+//            "Smartphones",
+//            "Laptops and Desktops"
+//        )
 
-        binding.viewPager.adapter = CarouselRVAdapter(demoData)
+//        val demoData = getData()
 
-        val compositePageTransformer = CompositePageTransformer()
-        compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
-        binding.viewPager.setPageTransformer(compositePageTransformer)
+//        binding.viewPager.adapter = CarouselRVAdapter(demoData)
+//
+//        val compositePageTransformer = CompositePageTransformer()
+//        compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
+//        binding.viewPager.setPageTransformer(compositePageTransformer)
 
+        lifecycleScope.launch {
+            val demoData = getData()
+            withContext(Dispatchers.Main) {
+                binding.viewPager.adapter = CarouselRVAdapter(demoData)
+
+                val compositePageTransformer = CompositePageTransformer()
+                compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
+                binding.viewPager.setPageTransformer(compositePageTransformer)
+            }
+        }
         return binding.root
+    }
+
+    private suspend fun getData() : ArrayList<ArrayList<String>>{
+        val demoData = ArrayList<ArrayList<String>>()
+        withContext(Dispatchers.IO) {
+            try {
+                val response = RetrofitInstance.authService.getProducts().execute()
+                val productList = response.body()
+                if (productList != null) {
+                    for (product in productList) {
+                        Log.i("Retrofit", product.productName)
+                        val productData = arrayListOf(
+                            product.productName,
+                            product.categoryType,
+                            product.productPrice.toString(),
+                            product.imageUrl
+                        )
+                        demoData.add(productData)
+                    }
+                }
+            } catch (e: Exception) {
+                Toast.makeText(requireContext(), "${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+        return demoData
     }
 }

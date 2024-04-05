@@ -80,6 +80,32 @@
                     android:adjustViewBounds="true"
                     app:srcCompat="@drawable/latest_trends" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/textView11"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="30sp"
+                        android:textStyle="bold"
+                        android:layout_margin="10dp"
+                        android:textColor="@color/blueTheme"
+                        android:text="Offer-fall in before winter" />
+
+                    <TextView
+                        android:id="@+id/textView12"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:layout_margin="10dp"
+                        android:text="Curated collection at market crash price for all your winter needs" />
+                </LinearLayout>
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/view_pager"
                     android:layout_width="match_parent"
