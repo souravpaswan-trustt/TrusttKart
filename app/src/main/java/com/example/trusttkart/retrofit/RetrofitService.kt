@@ -18,6 +18,8 @@ interface RetrofitService {
 
     @POST("api/register")
     fun register(@Body credentials: RegisterCredentials): Call<RegisterResponse>
+
+//    @GET("")
 }
 
 data class LoginCredentials(

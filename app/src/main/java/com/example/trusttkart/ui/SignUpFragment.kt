@@ -1,5 +1,6 @@
 package com.example.trusttkart.ui
 
+import SharedPreferencesManager
 import android.content.Intent
 import android.os.Bundle
 import android.text.SpannableString
@@ -22,6 +23,9 @@ import com.example.trusttkart.retrofit.RegisterCredentials
 import com.example.trusttkart.retrofit.RegisterResponse
 import com.example.trusttkart.retrofit.RetrofitInstance
 import com.example.trusttkart.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +34,7 @@ class SignUpFragment : Fragment() {
 
     private lateinit var binding: FragmentSignUpBinding
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var preferences: SharedPreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -38,6 +43,10 @@ class SignUpFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_up, container, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding.myViewModel = mainViewModel
+
+        GlobalScope.launch(Dispatchers.IO) {
+            preferences = SharedPreferencesManager.getInstance(this@SignUpFragment.requireContext(),"sharedpref")
+        }
 
         val mSpannableString = SpannableString("Login")
         mSpannableString.setSpan(UnderlineSpan(), 0, mSpannableString.length, 0)
@@ -72,6 +81,7 @@ class SignUpFragment : Fragment() {
                                 if (registerResponse != null && registerResponse.success) {
                                     val user = registerResponse.user
                                     // Registration successful, handle user data
+                                    preferences.saveLoggedInUser(email) // Save logged in user's email
                                     Log.i("Retrofit", "Sign up successful")
                                     val intent = Intent(requireContext(), MainActivity::class.java)
                                     startActivity(intent)
@@ -91,11 +101,7 @@ class SignUpFragment : Fragment() {
                             }
 
                             override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "${t.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                                Toast.makeText(requireContext(), "${t.message}", Toast.LENGTH_SHORT).show()
                             }
                         })
                     } catch (e: Exception) {

@@ -17,7 +17,7 @@ import com.example.trusttkart.retrofit.RetrofitInstance
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import retrofit2.Response
 
-public var arrayList = mutableListOf<String>()
+//public var arrayList = mutableListOf<String>()
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         val navView: BottomNavigationView = findViewById(R.id.bottomNavigation)
         navView.setupWithNavController(navController)
 //        getData()
+
     }
 
     private fun getData() {
@@ -49,7 +50,7 @@ class MainActivity : AppCompatActivity() {
             if (productList != null) {
                 while (productList.hasNext()) {
                     var product = productList.next()
-                    arrayList.add(product.productName)
+//                    arrayList.add(product.productName)
                     Log.i("Retrofit", product.productName)
                 }
             }

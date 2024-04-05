@@ -1,5 +1,6 @@
 package com.example.trusttkart.ui
 
+import SharedPreferencesManager
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -22,6 +23,9 @@ import com.example.trusttkart.retrofit.LoginResponse
 import com.example.trusttkart.retrofit.RetrofitInstance
 import com.example.trusttkart.retrofit.RetrofitService
 import com.example.trusttkart.viewmodel.MainViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +34,7 @@ class SignInFragment : Fragment() {
 
     private lateinit var binding: FragmentSignInBinding
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var preferences: SharedPreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,65 +44,63 @@ class SignInFragment : Fragment() {
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding.myViewModel = mainViewModel
 
+        GlobalScope.launch(Dispatchers.IO) {
+            preferences = SharedPreferencesManager.getInstance(this@SignInFragment.requireContext(),"sharedpref")
+        }
+
         binding.SignInButton.setOnClickListener {
-            try {
 
-                val email = mainViewModel.email.value.toString().trim()
-                val password = mainViewModel.password.value.toString()
 
-                if (email == null || email == "" || password == null || password == "") {
-                    Toast.makeText(
-                        this@SignInFragment.requireContext(),
-                        "Please enter values for the fields!",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                } else {
-                    try {
-                        val credentials = LoginCredentials(email, password)
+            val email = mainViewModel.email.value.toString().trim()
+            val password = mainViewModel.password.value.toString()
 
-                        RetrofitInstance.authService.login(credentials).enqueue(object :
-                            Callback<LoginResponse> {
-                            override fun onResponse(
-                                call: Call<LoginResponse>,
-                                response: Response<LoginResponse>
-                            ) {
-                                val loginResponse = response.body()
-                                if (loginResponse != null && loginResponse.success) {
-                                    val user = loginResponse.user
-                                    // Login successful, handle user data
-                                    Log.i("Retrofit", "Login successful")
-                                    val intent = Intent(requireContext(), MainActivity::class.java)
-                                    startActivity(intent)
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Login successful",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Log.i("Retrofit", "Login Failed")
-                                    Toast.makeText(
-                                        requireContext(),
-                                        "Login failed",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+            if (email == null || email == "" || password == null || password == "") {
+                Toast.makeText(
+                    this@SignInFragment.requireContext(),
+                    "Please enter values for the fields!",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                val credentials = LoginCredentials(email, password)
 
-                            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                                Toast.makeText(
-                                    requireContext(),
-                                    "${t.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        })
-                    } catch (e: Exception) {
-                        Toast.makeText(requireContext(), "${e.message}", Toast.LENGTH_SHORT).show()
+                RetrofitInstance.authService.login(credentials).enqueue(object :
+                    Callback<LoginResponse> {
+                    override fun onResponse(
+                        call: Call<LoginResponse>,
+                        response: Response<LoginResponse>
+                    ) {
+                        val loginResponse = response.body()
+                        if (loginResponse != null && loginResponse.success) {
+                            val user = loginResponse.user
+                            // Login successful, handle user data
+                            Log.i("Retrofit", "Login successful")
+                            preferences.saveLoggedInUser(email) // Save logged in user's email
+                            Toast.makeText(
+                                requireContext(),
+                                "Login successful",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                        } else {
+                            Log.i("Retrofit", "Login Failed")
+                            Toast.makeText(
+                                requireContext(),
+                                "Login failed",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
 
-            } catch (e: Exception) {
-                Log.i("IntentError", e.toString())
+                    override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                        Toast.makeText(
+                            requireContext(),
+                            "${t.message}",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                })
+
             }
         }
 

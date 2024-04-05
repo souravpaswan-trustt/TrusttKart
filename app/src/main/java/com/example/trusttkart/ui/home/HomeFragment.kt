@@ -1,5 +1,6 @@
 package com.example.trusttkart.ui.home
 
+import SharedPreferencesManager
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
@@ -22,6 +23,7 @@ class HomeFragment : Fragment() {
 
     private lateinit var binding: FragmentHomeBinding
     private lateinit var homeViewModel: HomeViewModel
+    private lateinit var preferences: SharedPreferencesManager
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -32,6 +34,16 @@ class HomeFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         binding.myViewModel = homeViewModel
         binding.lifecycleOwner = this
+
+        preferences = SharedPreferencesManager.getInstance(requireContext(), "sharedpref")
+
+        val loggedInUser = preferences.getLoggedInUser()
+        if (loggedInUser != null) {
+            binding.signInSignUpLayout.visibility = View.GONE
+        } else {
+            // No user is logged in
+            binding.signInSignUpLayout.visibility = View.VISIBLE
+        }
 
         binding.homeFragmentToSignIn.setOnClickListener {
             try {
