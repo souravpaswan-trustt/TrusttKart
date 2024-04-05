@@ -3,11 +3,19 @@ package com.example.trusttkart.recyclerview
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.trusttkart.R
+import com.example.trusttkart.retrofit.AddToCartResponse
+import com.example.trusttkart.retrofit.CartDetails
+import com.example.trusttkart.retrofit.RetrofitInstance
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CarouselRVAdapter(private val carouselDataList: ArrayList<ArrayList<String>>) :
     RecyclerView.Adapter<CarouselRVAdapter.CarouselItemViewHolder>() {
@@ -30,9 +38,38 @@ class CarouselRVAdapter(private val carouselDataList: ArrayList<ArrayList<String
         Glide.with(holder.itemView.context)
             .load(carouselDataList[position][3])
             .into(carouselProductImageView)
+
+        val addToCartButton = holder.itemView.findViewById<Button>(R.id.addToCartButton)
+        addToCartButton.setOnClickListener {
+            addToCart(holder, position)
+        }
     }
 
     override fun getItemCount(): Int {
         return carouselDataList.size
+    }
+
+    private fun addToCart(holder: CarouselItemViewHolder, position: Int){
+        val productId = carouselDataList[position][4].toInt()
+        val userId = 302
+        val quantity = 1
+
+        val cartItem = CartDetails(userId, productId, quantity)
+
+        RetrofitInstance.authService.addToCart(cartItem).enqueue(object :
+            Callback<AddToCartResponse> {
+            override fun onResponse(call: Call<AddToCartResponse>, response: Response<AddToCartResponse>) {
+                val addToCartResponse = response.body()
+                if (addToCartResponse != null && addToCartResponse.success) {
+                    Toast.makeText(holder.itemView.context, "Added to cart", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(holder.itemView.context, "Failed to add product to cart", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<AddToCartResponse>, t: Throwable) {
+                Toast.makeText(holder.itemView.context, "${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 }

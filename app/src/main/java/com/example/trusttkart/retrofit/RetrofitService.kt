@@ -9,9 +9,6 @@ import retrofit2.http.POST
 
 interface RetrofitService {
 
-//    @GET("product/")
-//    fun getProducts() : Response<ProductsResponse>
-
     @POST("api/login")
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>
 
@@ -20,6 +17,9 @@ interface RetrofitService {
 
     @GET("product/")
     fun getProducts(): Call<List<ProductsResponse>>
+
+    @POST("/cart/add")
+    fun addToCart(@Body cartDetails: CartDetails): Call<AddToCartResponse>
 }
 
 data class LoginCredentials(
@@ -32,4 +32,10 @@ data class RegisterCredentials(
     val email: String,
     val phoneNumber: String,
     val password: String
+)
+
+data class CartDetails(
+    val userId: Int,
+    val pId: Int,
+    val quantity: Int
 )

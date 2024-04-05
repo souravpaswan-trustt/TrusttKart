@@ -84,22 +84,6 @@ class HomeFragment : Fragment() {
                 RecyclerView.OVER_SCROLL_NEVER
         }
 
-//         val demoData = arrayListOf(
-//            "Christmas Tree",
-//            "Armchair and footstool",
-//            "Rocking-chair",
-//            "Smartphones",
-//            "Laptops and Desktops"
-//        )
-
-//        val demoData = getData()
-
-//        binding.viewPager.adapter = CarouselRVAdapter(demoData)
-//
-//        val compositePageTransformer = CompositePageTransformer()
-//        compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
-//        binding.viewPager.setPageTransformer(compositePageTransformer)
-
         lifecycleScope.launch {
             val demoData = getData()
             withContext(Dispatchers.Main) {
@@ -110,6 +94,7 @@ class HomeFragment : Fragment() {
                 binding.viewPager.setPageTransformer(compositePageTransformer)
             }
         }
+
         return binding.root
     }
 
@@ -125,8 +110,9 @@ class HomeFragment : Fragment() {
                         val productData = arrayListOf(
                             product.productName,
                             product.categoryType,
-                            product.productPrice.toString(),
-                            product.imageUrl
+                            "₹" + product.productPrice.toString(),
+                            product.imageUrl,
+                            product.id.toString()
                         )
                         demoData.add(productData)
                     }

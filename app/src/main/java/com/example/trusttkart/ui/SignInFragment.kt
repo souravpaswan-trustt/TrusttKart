@@ -50,7 +50,6 @@ class SignInFragment : Fragment() {
 
         binding.SignInButton.setOnClickListener {
 
-
             val email = mainViewModel.email.value.toString().trim()
             val password = mainViewModel.password.value.toString()
 

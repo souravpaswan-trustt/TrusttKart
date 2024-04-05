@@ -9,4 +9,4 @@ data class ProductsResponse(
     val addedOn: String,
     val categoryId: Int,
     val categoryType: String
-    )
+)
