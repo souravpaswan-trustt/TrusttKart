@@ -1,13 +1,20 @@
 package com.example.trusttkart.retrofit
 
 
+import com.example.trusttkart.data.CartDetails
+import com.example.trusttkart.data.LoginCredentials
+import com.example.trusttkart.data.RegisterCredentials
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 interface RetrofitService {
+
+    @GET("/api/user/email/{email}")
+    fun getUserByEmail(@Path("email") email: String): Call<Int>
 
     @POST("api/login")
     fun login(@Body credentials: LoginCredentials): Call<LoginResponse>
@@ -20,22 +27,7 @@ interface RetrofitService {
 
     @POST("/cart/add")
     fun addToCart(@Body cartDetails: CartDetails): Call<AddToCartResponse>
+
+    @GET("/cart/{userId}")
+    fun getCart(@Path("userId") userId: Int): Call<List<FetchCartResponse>>
 }
-
-data class LoginCredentials(
-    val email: String,
-    val password: String
-)
-
-data class RegisterCredentials(
-    val name: String,
-    val email: String,
-    val phoneNumber: String,
-    val password: String
-)
-
-data class CartDetails(
-    val userId: Int,
-    val pId: Int,
-    val quantity: Int
-)

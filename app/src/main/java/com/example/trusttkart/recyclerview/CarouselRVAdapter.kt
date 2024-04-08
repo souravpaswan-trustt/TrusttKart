@@ -1,5 +1,6 @@
 package com.example.trusttkart.recyclerview
 
+import SharedPreferencesManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.trusttkart.R
 import com.example.trusttkart.retrofit.AddToCartResponse
-import com.example.trusttkart.retrofit.CartDetails
+import com.example.trusttkart.data.CartDetails
 import com.example.trusttkart.retrofit.RetrofitInstance
 import retrofit2.Call
 import retrofit2.Callback
@@ -19,6 +20,8 @@ import retrofit2.Response
 
 class CarouselRVAdapter(private val carouselDataList: ArrayList<ArrayList<String>>) :
     RecyclerView.Adapter<CarouselRVAdapter.CarouselItemViewHolder>() {
+
+        private lateinit var preferences: SharedPreferencesManager
 
     class CarouselItemViewHolder(view: View) : RecyclerView.ViewHolder(view)
 
@@ -49,12 +52,14 @@ class CarouselRVAdapter(private val carouselDataList: ArrayList<ArrayList<String
         return carouselDataList.size
     }
 
-    private fun addToCart(holder: CarouselItemViewHolder, position: Int){
+    fun addToCart(holder: CarouselItemViewHolder, position: Int){
+        preferences = SharedPreferencesManager.getInstance(holder.itemView.context, "shared_pref")
         val productId = carouselDataList[position][4].toInt()
-        val userId = 302
-        val quantity = 1
-
-        val cartItem = CartDetails(userId, productId, quantity)
+//        //assume user is logged in
+//        val userEmail = preferences.getLoggedInUser()!!
+//        val response = RetrofitInstance.authService.getUserByEmail(userEmail).execute()
+//        val userId = response.body()!!
+        val cartItem = CartDetails(10, productId, 1)
 
         RetrofitInstance.authService.addToCart(cartItem).enqueue(object :
             Callback<AddToCartResponse> {

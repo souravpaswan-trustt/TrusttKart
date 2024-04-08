@@ -16,10 +16,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.trusttkart.MainActivity
 import com.example.trusttkart.R
+import com.example.trusttkart.data.RegisterCredentials
 import com.example.trusttkart.databinding.FragmentSignUpBinding
-import com.example.trusttkart.retrofit.LoginCredentials
 import com.example.trusttkart.retrofit.LoginResponse
-import com.example.trusttkart.retrofit.RegisterCredentials
 import com.example.trusttkart.retrofit.RegisterResponse
 import com.example.trusttkart.retrofit.RetrofitInstance
 import com.example.trusttkart.viewmodel.MainViewModel

@@ -106,15 +106,17 @@ class HomeFragment : Fragment() {
                 val productList = response.body()
                 if (productList != null) {
                     for (product in productList) {
-                        Log.i("Retrofit", product.productName)
-                        val productData = arrayListOf(
-                            product.productName,
-                            product.categoryType,
-                            "₹" + product.productPrice.toString(),
-                            product.imageUrl,
-                            product.id.toString()
-                        )
-                        demoData.add(productData)
+                        if(product.categoryType.equals("winter", ignoreCase = true)) {
+                            Log.i("Retrofit", product.productName)
+                            val productData = arrayListOf(
+                                product.productName,
+                                product.categoryType,
+                                "₹" + product.productPrice.toString(),
+                                product.imageUrl,
+                                product.id.toString()
+                            )
+                            demoData.add(productData)
+                        }
                     }
                 }
             } catch (e: Exception) {

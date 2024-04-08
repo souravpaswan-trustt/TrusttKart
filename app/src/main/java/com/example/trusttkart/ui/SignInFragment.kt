@@ -17,8 +17,8 @@ import androidx.lifecycle.liveData
 import androidx.navigation.findNavController
 import com.example.trusttkart.MainActivity
 import com.example.trusttkart.R
+import com.example.trusttkart.data.LoginCredentials
 import com.example.trusttkart.databinding.FragmentSignInBinding
-import com.example.trusttkart.retrofit.LoginCredentials
 import com.example.trusttkart.retrofit.LoginResponse
 import com.example.trusttkart.retrofit.RetrofitInstance
 import com.example.trusttkart.retrofit.RetrofitService
