@@ -17,13 +17,15 @@ class AuthActivity : AppCompatActivity() {
         try {
             val fragmentName = intent.getStringExtra("fragmentName")
             when (fragmentName) {
-                "SignInFragment" -> {
+                "SignUpFragment" -> {
+                    val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+                    val navController = navHostFragment.navController
+                    navController.navigate(R.id.signUpFragment)
+                }
+                else -> {
                     val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
                     val navController = navHostFragment.navController
                     navController.navigate(R.id.signInFragment)
-                }
-                else -> {
-
                 }
             }
         } catch(e : Exception){

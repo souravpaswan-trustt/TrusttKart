@@ -43,6 +43,7 @@ class SignInFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_sign_in, container, false)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         binding.myViewModel = mainViewModel
+        binding.invalidCredentialsTextView.visibility = View.INVISIBLE
 
         GlobalScope.launch(Dispatchers.IO) {
             preferences = SharedPreferencesManager.getInstance(this@SignInFragment.requireContext(),"sharedpref")
@@ -72,31 +73,19 @@ class SignInFragment : Fragment() {
                         if (loginResponse != null && loginResponse.success) {
                             val user = loginResponse.user
                             // Login successful, handle user data
-                            Log.i("Retrofit", "Login successful")
                             preferences.saveLoggedInUser(email) // Save logged in user's email
-                            Toast.makeText(
-                                requireContext(),
-                                "Login successful",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
                             val intent = Intent(requireContext(), MainActivity::class.java)
                             startActivity(intent)
                         } else {
                             Log.i("Retrofit", "Login Failed")
-                            Toast.makeText(
-                                requireContext(),
-                                "Login failed",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            binding.invalidCredentialsTextView.visibility = View.VISIBLE
+//                            Toast.makeText(requireContext(), "Login failed", Toast.LENGTH_SHORT).show()
                         }
                     }
 
                     override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                        Toast.makeText(
-                            requireContext(),
-                            "${t.message}",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        Toast.makeText(requireContext(), "${t.message}", Toast.LENGTH_SHORT).show()
                     }
                 })
 
@@ -110,7 +99,6 @@ class SignInFragment : Fragment() {
         binding.forgotPasswordtextView.setOnClickListener {
             it.findNavController().navigate(R.id.action_signInFragment_to_forgotPasswordFragment)
         }
-
         return binding.root
     }
 }

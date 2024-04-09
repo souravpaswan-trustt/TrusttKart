@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.trusttkart.R
 import com.example.trusttkart.retrofit.FetchCartResponse
-import com.example.trusttkart.recyclerview.CarouselRVAdapter
 
 class CartRVAdapter(private val cartItems: List<FetchCartResponse>) : RecyclerView.Adapter<CartRVAdapter.CartViewHolder>() {
 

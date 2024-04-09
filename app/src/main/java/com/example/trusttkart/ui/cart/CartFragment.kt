@@ -13,6 +13,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.trusttkart.R
@@ -61,8 +62,9 @@ class CartFragment : Fragment() {
                 val userEmail = preferences.getLoggedInUser()
                 if (userEmail != null) {
                     val response = RetrofitInstance.authService.getUserByEmail(userEmail).execute()
-                    val userId = response.body()
-                    if (userId != null) {
+                    if(response.body() != null){
+                        val userId = response.body()!!
+                        Log.i("Preferences", "User ID: $userId")
                         val cartResponse = RetrofitInstance.authService.getCart(userId).execute()
                         val cartList = cartResponse.body()
                         if (cartList != null && cartList.size > 0) {
@@ -76,8 +78,7 @@ class CartFragment : Fragment() {
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT)
-                                .show()
+                            Toast.makeText(requireContext(), "User not found", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {

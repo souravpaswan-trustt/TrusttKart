@@ -2,26 +2,32 @@ package com.example.trusttkart.ui.home
 
 import SharedPreferencesManager
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.content.res.Resources
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.example.trusttkart.AuthActivity
 import com.example.trusttkart.R
+import com.example.trusttkart.data.CartDetails
 import com.example.trusttkart.databinding.FragmentHomeBinding
 import com.example.trusttkart.recyclerview.CarouselRVAdapter
 import com.example.trusttkart.retrofit.ProductsResponse
 import com.example.trusttkart.retrofit.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -87,7 +93,48 @@ class HomeFragment : Fragment() {
         lifecycleScope.launch {
             val demoData = getData()
             withContext(Dispatchers.Main) {
-                binding.viewPager.adapter = CarouselRVAdapter(demoData)
+                binding.viewPager.adapter = CarouselRVAdapter(
+                    demoData,
+                    object : CarouselRVAdapter.CarouselAdapterItemClickListener {
+                        override fun onAddToCartClickWithoutSignIn() {
+                            val intent = Intent(context, AuthActivity::class.java)
+                            startActivity(intent)
+                        }
+
+                        override fun onAddToCartClickWithSignIn(holder: CarouselRVAdapter.CarouselItemViewHolder, position: Int, productId: Int, userId: Int) {
+
+                            CoroutineScope(Dispatchers.IO).launch {
+
+                                if (!checkProductInCart(productId, userId)) {
+                                    val cartItem = CartDetails(userId, productId, 1)
+                                    Log.i("Retrofit", cartItem.toString())
+
+                                    val addToCartResponse = RetrofitInstance.authService.addToCart(cartItem).execute()
+                                    if (addToCartResponse.isSuccessful && addToCartResponse.body() != null && addToCartResponse.body()!!.success) {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(holder.itemView.context, "Added to cart", Toast.LENGTH_SHORT).show()
+                                        }
+                                    } else {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(holder.itemView.context, "Failed to add product to cart", Toast.LENGTH_SHORT).show()
+                                            Log.i("Retrofit", addToCartResponse.body().toString())
+                                        }
+                                    }
+                                } else {
+                                    withContext(Dispatchers.Main) {
+                                        holder.addToCartButton.text = "Go to cart"
+                                        holder.addToCartButton.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.blueTheme)
+                                        )
+                                        holder.addToCartButton.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
+                                    }
+                                }
+                            }
+                        }
+
+                        override fun carouselHomeToCartFragment(){
+                            findNavController().navigate(R.id.action_navigation_home_to_navigation_cart)
+                        }
+                    })
 
                 val compositePageTransformer = CompositePageTransformer()
                 compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
@@ -98,7 +145,26 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
-    private suspend fun getData() : ArrayList<ArrayList<String>>{
+    private suspend fun checkProductInCart(productId: Int, userId: Int): Boolean {
+        return withContext(Dispatchers.IO) {
+            var productInCart = false
+            val cartResponse = RetrofitInstance.authService.getCart(userId).execute()
+            val cartList = cartResponse.body()
+            if (cartList != null && cartList.size > 0) {
+                for (item in cartList) {
+                    Log.i("Retrofit", item.toString())
+                    if (item.product.id == productId) {
+                        Log.i("Retrofit", "Product id  ${item.product.id} already in cart")
+                        productInCart = true
+                        break
+                    }
+                }
+            }
+            productInCart
+        }
+    }
+
+    private suspend fun getData(): ArrayList<ArrayList<String>> {
         val demoData = ArrayList<ArrayList<String>>()
         withContext(Dispatchers.IO) {
             try {
@@ -106,7 +172,7 @@ class HomeFragment : Fragment() {
                 val productList = response.body()
                 if (productList != null) {
                     for (product in productList) {
-                        if(product.categoryType.equals("winter", ignoreCase = true)) {
+                        if (product.categoryType.equals("winter", ignoreCase = true)) {
                             Log.i("Retrofit", product.productName)
                             val productData = arrayListOf(
                                 product.productName,

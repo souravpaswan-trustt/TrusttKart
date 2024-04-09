@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
     <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">172.16.7.197</domain>
+    </domain-config>
+
+    <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">172.16.6.230</domain>
-<!--        <domain includeSubdomains="true">172.16.6.230:8080</domain>-->
-<!--        <domain includeSubdomains="true">172.16.6.230:8080/product/</domain>-->
     </domain-config>
 </network-security-config>
