@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -21,20 +22,15 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.CompositePageTransformer
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.example.trusttkart.AuthActivity
+import com.example.trusttkart.MainActivity
 import com.example.trusttkart.R
 import com.example.trusttkart.data.CartDetails
 import com.example.trusttkart.databinding.FragmentHomeBinding
 import com.example.trusttkart.recyclerview.CarouselRVAdapter
-import com.example.trusttkart.retrofit.ProductsResponse
-import com.example.trusttkart.retrofit.RetrofitInstance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class HomeFragment : Fragment() {
 
@@ -51,7 +47,11 @@ class HomeFragment : Fragment() {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_home, container, false)
         binding.myViewModel = homeViewModel
         binding.lifecycleOwner = this
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         preferences = SharedPreferencesManager.getInstance(requireContext(), "sharedpref")
 
         val loggedInUser = preferences.getLoggedInUser()
@@ -90,105 +90,67 @@ class HomeFragment : Fragment() {
                 RecyclerView.OVER_SCROLL_NEVER
         }
 
-        lifecycleScope.launch {
-            val demoData = getData()
-            withContext(Dispatchers.Main) {
-                binding.viewPager.adapter = CarouselRVAdapter(
-                    demoData,
-                    object : CarouselRVAdapter.CarouselAdapterItemClickListener {
-                        override fun onAddToCartClickWithoutSignIn() {
-                            val intent = Intent(context, AuthActivity::class.java)
-                            startActivity(intent)
+//        homeViewModel.getData()
+        homeViewModel.demoData.observe(viewLifecycleOwner, Observer { data ->
+            binding.viewPager.adapter = CarouselRVAdapter(
+                data,
+                object : CarouselRVAdapter.CarouselAdapterItemClickListener {
+                    override fun onAddToCartClickListener(holder: CarouselRVAdapter.CarouselItemViewHolder, productId: Int) {
+                        val email = preferences.getLoggedInUser()
+                        if(email.isNullOrEmpty()){
+                            onAddToCartClickWithoutSignIn()
                         }
-
-                        override fun onAddToCartClickWithSignIn(holder: CarouselRVAdapter.CarouselItemViewHolder, position: Int, productId: Int, userId: Int) {
-
-                            CoroutineScope(Dispatchers.IO).launch {
-
-                                if (!checkProductInCart(productId, userId)) {
-                                    val cartItem = CartDetails(userId, productId, 1)
-                                    Log.i("Retrofit", cartItem.toString())
-
-                                    val addToCartResponse = RetrofitInstance.authService.addToCart(cartItem).execute()
-                                    if (addToCartResponse.isSuccessful && addToCartResponse.body() != null && addToCartResponse.body()!!.success) {
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(holder.itemView.context, "Added to cart", Toast.LENGTH_SHORT).show()
-                                        }
-                                    } else {
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(holder.itemView.context, "Failed to add product to cart", Toast.LENGTH_SHORT).show()
-                                            Log.i("Retrofit", addToCartResponse.body().toString())
-                                        }
-                                    }
-                                } else {
-                                    withContext(Dispatchers.Main) {
-                                        holder.addToCartButton.text = "Go to cart"
-                                        holder.addToCartButton.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.blueTheme)
-                                        )
-                                        holder.addToCartButton.backgroundTintList = ColorStateList.valueOf(Color.WHITE)
-                                    }
-                                }
+                        else{
+                            lifecycleScope.launch {
+                                homeViewModel.fetchUserId(email)
+                                val userId = homeViewModel.userIdLiveData.value
+                                onAddToCartClickWithSignIn(holder, productId, userId!!)
                             }
                         }
+                    }
 
-                        override fun carouselHomeToCartFragment(){
-                            findNavController().navigate(R.id.action_navigation_home_to_navigation_cart)
-                        }
-                    })
+                    override fun carouselHomeToCartFragment() {
+                        (requireActivity() as MainActivity).binding.bottomNavigation.selectedItemId = R.id.navigation_cart
+                    }
+                })
 
-                val compositePageTransformer = CompositePageTransformer()
-                compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
-                binding.viewPager.setPageTransformer(compositePageTransformer)
-            }
-        }
-
-        return binding.root
+            val compositePageTransformer = CompositePageTransformer()
+            compositePageTransformer.addTransformer(MarginPageTransformer((40 * Resources.getSystem().displayMetrics.density).toInt()))
+            binding.viewPager.setPageTransformer(compositePageTransformer)
+        })
+        homeViewModel.getData()
     }
 
-    private suspend fun checkProductInCart(productId: Int, userId: Int): Boolean {
-        return withContext(Dispatchers.IO) {
-            var productInCart = false
-            val cartResponse = RetrofitInstance.authService.getCart(userId).execute()
-            val cartList = cartResponse.body()
-            if (cartList != null && cartList.size > 0) {
-                for (item in cartList) {
-                    Log.i("Retrofit", item.toString())
-                    if (item.product.id == productId) {
-                        Log.i("Retrofit", "Product id  ${item.product.id} already in cart")
-                        productInCart = true
-                        break
-                    }
-                }
-            }
-            productInCart
+    fun onAddToCartClickWithoutSignIn() {
+        CoroutineScope(Dispatchers.Main).launch{
+            Toast.makeText(requireContext(), "Please login", Toast.LENGTH_SHORT).show()
+            val intent = Intent(context, AuthActivity::class.java)
+            startActivity(intent)
         }
     }
 
-    private suspend fun getData(): ArrayList<ArrayList<String>> {
-        val demoData = ArrayList<ArrayList<String>>()
-        withContext(Dispatchers.IO) {
-            try {
-                val response = RetrofitInstance.authService.getProducts().execute()
-                val productList = response.body()
-                if (productList != null) {
-                    for (product in productList) {
-                        if (product.categoryType.equals("winter", ignoreCase = true)) {
-                            Log.i("Retrofit", product.productName)
-                            val productData = arrayListOf(
-                                product.productName,
-                                product.categoryType,
-                                "₹" + product.productPrice.toString(),
-                                product.imageUrl,
-                                product.id.toString()
-                            )
-                            demoData.add(productData)
-                        }
-                    }
+    fun onAddToCartClickWithSignIn(holder: CarouselRVAdapter.CarouselItemViewHolder, productId: Int, userId: Int ) {
+        lifecycleScope.launch(Dispatchers.IO) {
+            homeViewModel.checkProductInCart(productId, userId)
+            Log.i("Retrofit", "Product in cart ${homeViewModel.productInCart.value.toString()}")
+            if (homeViewModel.productInCart.value == false) {
+                val cartItem = CartDetails(userId, productId, 1)
+                homeViewModel.addToCart(cartItem)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(requireContext(), homeViewModel.addToCartLiveData.value, Toast.LENGTH_SHORT).show()
                 }
-            } catch (e: Exception) {
-                Toast.makeText(requireContext(), "${e.message}", Toast.LENGTH_SHORT).show()
+            }
+            withContext(Dispatchers.Main) {
+                holder.addToCartButton.text = "Go to cart"
+                holder.addToCartButton.setTextColor(
+                    ContextCompat.getColor(
+                        holder.itemView.context,
+                        R.color.blueTheme
+                    )
+                )
+                holder.addToCartButton.backgroundTintList =
+                    ColorStateList.valueOf(Color.WHITE)
             }
         }
-        return demoData
     }
 }

@@ -12,10 +12,9 @@
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_navigation_home_to_navigation_cart"
+            app:restoreState="true"
+            app:popUpToSaveState="true"
             app:destination="@id/navigation_cart" />
-        <action
-            android:id="@+id/action_navigation_home_to_navigation_profile"
-            app:destination="@id/navigation_profile" />
     </fragment>
 
     <fragment
@@ -24,10 +23,9 @@
         android:label="Profile"
         tools:layout="@layout/fragment_profile" >
         <action
-            android:id="@+id/action_navigation_profile_to_navigation_cart"
-            app:destination="@id/navigation_cart" />
-        <action
             android:id="@+id/action_navigation_profile_to_navigation_home"
+            app:restoreState="true"
+            app:popUpToSaveState="true"
             app:destination="@id/navigation_home" />
     </fragment>
 
@@ -36,11 +34,11 @@
         android:name="com.example.trusttkart.ui.cart.CartFragment"
         android:label="Cart"
         tools:layout="@layout/fragment_cart" >
-        <action
-            android:id="@+id/action_navigation_cart_to_navigation_profile"
-            app:destination="@id/navigation_profile" />
-        <action
-            android:id="@+id/action_navigation_cart_to_navigation_home"
-            app:destination="@id/navigation_home" />
+
     </fragment>
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.example.trusttkart.ui.checkout.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout" />
 </navigation>

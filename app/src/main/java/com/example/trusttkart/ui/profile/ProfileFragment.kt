@@ -1,22 +1,20 @@
 package com.example.trusttkart.ui.profile
 
 import SharedPreferencesManager
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
+import com.example.trusttkart.MainActivity
 import com.example.trusttkart.R
 import com.example.trusttkart.databinding.FragmentProfileBinding
-import com.example.trusttkart.ui.home.HomeViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class ProfileFragment : Fragment() {
@@ -35,15 +33,19 @@ class ProfileFragment : Fragment() {
         binding.myViewModel = profileViewModel
         binding.lifecycleOwner = this
 
-        GlobalScope.launch(Dispatchers.IO) {
-            preferences = SharedPreferencesManager.getInstance(this@ProfileFragment.requireContext(),"sharedpref")
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleScope.launch(Dispatchers.IO) {
+            preferences = SharedPreferencesManager.getInstance(requireContext(),"sharedpref")
         }
 
         binding.logoutButton.setOnClickListener {
             preferences.logoutUser()
-            it.findNavController().navigate(R.id.action_navigation_profile_to_navigation_home)
-            Toast.makeText(this.requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
+            (requireActivity() as MainActivity).binding.bottomNavigation.selectedItemId = R.id.navigation_home
+            Toast.makeText(requireContext(), "Logged out successfully", Toast.LENGTH_SHORT).show()
         }
-        return binding.root
     }
 }

@@ -22,6 +22,7 @@ class SharedPreferencesManager private constructor(private val mPref: SharedPref
 
     companion object {
         private const val LOGGED_IN_USER = "logged_in_user"
+        private const val LOGGED_IN_USER_ID = "logged_in_user_id"
 
         private var mInstance: SharedPreferencesManager? = null
 

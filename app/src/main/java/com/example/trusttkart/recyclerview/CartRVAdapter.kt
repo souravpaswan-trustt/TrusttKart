@@ -6,13 +6,21 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.net.toUri
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.trusttkart.R
 import com.example.trusttkart.retrofit.FetchCartResponse
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class CartRVAdapter(private val cartItems: List<FetchCartResponse>) : RecyclerView.Adapter<CartRVAdapter.CartViewHolder>() {
+class CartRVAdapter(private val cartItemOnClickListener: CartItemOnClickListener,
+                    private val cartItems: List<FetchCartResponse>) : RecyclerView.Adapter<CartRVAdapter.CartViewHolder>() {
+
+    interface CartItemOnClickListener{
+        fun removeCartItemOnClick(productId: Int)
+        fun updateCartItemOnClick(productId: Int, increase: Boolean)
+    }
 
     inner class CartViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val productNameTextView: TextView = itemView.findViewById(R.id.cartProductNameTextView)
@@ -30,21 +38,34 @@ class CartRVAdapter(private val cartItems: List<FetchCartResponse>) : RecyclerVi
     }
 
     override fun onBindViewHolder(holder: CartViewHolder, position: Int) {
-        val currentItem = cartItems[position].product
-        holder.productNameTextView.text = currentItem.productName
-        holder.productPriceTextView.text = currentItem.productPrice.toString()
-        holder.productQuantityTextView.text = cartItems[position].quantity.toString()
-//        holder.productImageView.setImageURI(currentItem.imageUrl.toUri())
+        if(!cartItems.isNullOrEmpty()) {
 
-        Glide.with(holder.productImageView)
-            .load(currentItem.imageUrl)
-            .into(holder.productImageView)
+            val currentItem = cartItems[position].product
+            holder.productNameTextView.text = currentItem.productName
+            holder.productPriceTextView.text = currentItem.productPrice.toString()
+            holder.productQuantityTextView.text = cartItems[position].quantity.toString()
 
-        holder.increaseItemQuantityButton.setOnClickListener {
+            Glide.with(holder.productImageView)
+                .load(currentItem.imageUrl)
+                .into(holder.productImageView)
 
+            holder.increaseItemQuantityButton.setOnClickListener {
+                val productId = cartItems[position].product.id
+                cartItemOnClickListener.updateCartItemOnClick(productId, true)
+            }
+
+            holder.decreaseItemQuantityButton.setOnClickListener {
+                val productId = cartItems[position].product.id
+                cartItemOnClickListener.updateCartItemOnClick(productId, false)
+            }
+
+            holder.removeCartItemButton.setOnClickListener {
+                val productId = cartItems[position].product.id
+                cartItemOnClickListener.removeCartItemOnClick(productId)
+            }
+        } else{
+            Toast.makeText(holder.itemView.context, "Cart is empty", Toast.LENGTH_SHORT).show()
         }
-
-        // Implement functionality for the buttons
     }
 
     override fun getItemCount() = cartItems.size

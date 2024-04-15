@@ -6,7 +6,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RetrofitInstance {
 
-    companion object{
+    companion object {
         val BASE_URL = "http://172.16.7.197:8080/"
 
         fun getRetrofitInstance(): Retrofit {
